@@ -8,21 +8,31 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
+function addRegistration() {
+  const key = document.getElementById('public-key').value
+  if (!key || key.length === 0) {
+    window.alert('A valid key has to be supplied')
+  } else {
+    navigator.serviceWorker.ready
+      .then(async ({pushManager}) => {
+        const oldSubscription = await pushManager.getSubscription()
+        if (oldSubscription) {
+          await oldSubscription.unsubscribe()
+        }
+
+        const subscribeOptions = {
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(key)
+        }
+
+        return pushManager.subscribe(subscribeOptions)
+      })
+      .then(function(pushSubscription) {
+        console.log('Received PushSubscription: ', JSON.stringify(pushSubscription))
+        document.getElementById("subscription").innerHTML = JSON.stringify(pushSubscription)
+        return pushSubscription
+      })
+  }
+}
+
 navigator.serviceWorker.register('service-worker.js')
-
-navigator.serviceWorker.ready
-  .then(function(registration) {
-    const subscribeOptions = {
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        'BK-8sZRkdMcKuIitgPAjhcyztJfTg8iLEip7Jn_9QrrZzOW_eIZlUmtDkCwBRnTbSnxH-_0C6P9t3kr-zAoTLy4'
-      )
-    }
-
-    return registration.pushManager.subscribe(subscribeOptions)
-  })
-  .then(function(pushSubscription) {
-    console.log('Received PushSubscription: ', JSON.stringify(pushSubscription))
-    document.getElementById("subscription").innerHTML = JSON.stringify(pushSubscription)
-    return pushSubscription
-  })

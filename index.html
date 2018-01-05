@@ -6,7 +6,15 @@
 <body>
   <p>
     Visit <a href="https://web-push-codelab.glitch.me/">this</a> page, then
-    copy paste the subscription JSON below to send messages to yourself:
+    copy paste the public key into the text box, and press enter:
+  </p>
+  <form onsubmit="return false">
+    <input id="public-key"/>
+    <input type="submit" value="Enter" onclick="addRegistration()" />
+  </form>
+  <p>
+    Once the public key has been entered, copy paste the subscription JSON
+    below to send messages to yourself:
   </p>
   <code id="subscription"></code>
 </body>
